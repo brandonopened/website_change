@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Website Change Monitor</title>
+    <script>
+        // Function to check all websites
+        function checkAllWebsites() {
+            Object.keys(statesToCheck).forEach(function(state) {
+                // Call the function to check each individual state
+                checkWebsite(state);
+            });
+        }
+
+        // Function to trigger a status check for a specific state
+        function checkWebsite(state) {
+            fetch('/check-website/' + state, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('status-' + state).innerText = data.status;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Monitoring State Education Websites for Changes</h1>
+    <button onclick="checkAllWebsites()">Check All Statuses</button>
+    <table>
+        <tr>
+            <th>State</th>
+            <th>URL to Monitor</th>
+            <th>Status</th>
+        </tr>
+        {% for state, data in states.items() %}
+        <tr>
+            <td>{{ state }}</td>
+            <td><a href="{{ data.url }}">{{ data.url }}</a></td>
+            <td id="status-{{ state }}">{{ data.status }}</td>
+            <td><button onclick="checkWebsite('{{ state }}')">Check Status</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
